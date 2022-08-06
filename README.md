@@ -1,24 +1,23 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in Python'
-description: 'This template demonstrates how to make a simple HTTP API with Python running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: python
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# FPL Transfer Abuse
+This project is a joint collaboration between mates (James & Darren) and fantasy football rivals.
+Fantasy Premier league: (https://fantasy.premierleague.com/) is a fantasy football game played by over 8 million players worldwide.
+We play every year and are in a pretty competitive mini league with some other mates.
 
-# Serverless Framework Python HTTP API on AWS
+This project analyses the transfers made by each player each gameweek to see who made the best and worst transfers. It then shows these transfers on web app for all to see just how good (or poor) your managerial knowledge is compared to your mates.
 
-This template demonstrates how to make a simple HTTP API with Python running on AWS Lambda and API Gateway using the Serverless Framework.
+## Background
+The idea was the brainchild of James. He wrote a Python script that would send an email blast to all members of the mini league with the gameweeks transfer results. Together we repurposed this a little bit and turned it into an API hosted on AWS using Serverless (https://www.serverless.com/).
+In a seperate repo (TODO) I have created a React frontend app to display the data.
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/)  which includes DynamoDB, Mongo, Fauna and other examples.
+## Technologies Used
+- Python
+- Serverless
+- AWS Lambda
+- AWS Systems manager
 
-## Usage
+## Code Structure
 
-### Deployment
+### Deployment (via serverless)
 
 ```
 $ serverless deploy
