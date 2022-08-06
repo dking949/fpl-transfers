@@ -1,0 +1,16 @@
+org: dking949
+app: aws-fpl-transfer-abuse-api
+service: aws-fpl-transfer-abuse-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+
+functions:
+  getTransfers:
+    handler: transferNightmares.getTransfers
+    events:
+      - httpApi:
+          path: /
+          method: get
