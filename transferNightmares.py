@@ -9,7 +9,9 @@ client = boto3.client('ssm')
 
 @click.command()
 @click.option('--league-id')
-def getTransfers(league_id):
+def getTransfers():
+
+    league_id = 1117937
 
     #0 Fetch login details from AWS
     FPL_LOGIN = get_secret(FPL_LOGIN)
