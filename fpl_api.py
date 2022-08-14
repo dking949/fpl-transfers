@@ -1,6 +1,5 @@
 import requests
 
-
 class FPLClient:
 
     def __init__(self, user, password):
