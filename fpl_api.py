@@ -7,7 +7,7 @@ class FPLClient:
                    "app": "plfpl-web", "redirect_uri": "https://fantasy.premierleague.com/"}
 
         self.session = requests.Session()
-        self.session.post("https://users.premierleague.com/accounts/login/", data=payload)
+        # self.session.post("https://users.premierleague.com/accounts/login/", data=payload)
 
     def fpl_root_url(self):
         return 'https://fantasy.premierleague.com/api'
@@ -24,6 +24,7 @@ class FPLClient:
     def fpl_league_url(self, league_id):
         return f'{self.fpl_root_url()}/leagues-classic/{league_id}/standings/'
 
+#TODO need error handling here
     def get_all_players_data(self):
         jresp = self.session.get(self.fpl_bootstrap_static_url()).json()
         gw_number = 0

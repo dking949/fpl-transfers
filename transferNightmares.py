@@ -4,18 +4,15 @@ from player import Player
 import json
 import boto3
 import click
+import os
 
 client = boto3.client('ssm')
 
-@click.command()
-@click.option('--league-id')
-def getTransfers():
-
+def getTransfers(event, context):
     league_id = 1117937
 
-    #0 Fetch login details from AWS
-    FPL_LOGIN = get_secret(FPL_LOGIN)
-    FPL_PWD =get_secret(FPL_PWD)
+    FPL_LOGIN = os.environ.get('FPL_LOGIN')
+    FPL_PWD = os.environ.get('FPL_PWD')
 
     # 0. Login
     fpl_client = FPLClient(FPL_LOGIN, FPL_PWD)
@@ -23,6 +20,7 @@ def getTransfers():
     # 1. Get GW Number and populate Players list from FPL
     all_players = {}
     gw_number, player_data_json = fpl_client.get_all_players_data()
+
     for player in player_data_json:
         all_players[player["id"]] = Player(player["web_name"], player["photo"], player["event_points"])
 
@@ -65,16 +63,16 @@ def getTransfers():
     week_info = {
         'league_name': league_details["league"]["name"],
         'gw_number': gw_number,
-        'mvp': contestants[0],
-        'shitebag': contestants[-1]
+        'mvp': contestants[0].toJSON(),
+        'shitebag': contestants[-1].toJSON()
     }
 
     response = {
         "statusCode": 200,
-        "body": json.dumps(week_info)
+        "body": week_info
     }
 
-    return response
+    return json.dumps(response)
 
 
 def calculate_if_contestant_had_a_free_transfer(gw_number, contestant_transfers):
@@ -86,13 +84,3 @@ def calculate_if_contestant_had_a_free_transfer(gw_number, contestant_transfers)
                 count = count + 1
         free_transfer = (count == 0) or (free_transfer and count < 2)
     return free_transfer
-
-def get_secret(key):
-	resp = client.get_parameter(
-		Name=key,
-		WithDecryption=True
-	)
-	return resp['Parameter']['Value']
-
-access_token = get_secret('supermanToken')
-database_connection = get_secret('databaseConn')

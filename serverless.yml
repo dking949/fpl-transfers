@@ -10,7 +10,17 @@ provider:
 functions:
   getTransfers:
     handler: transferNightmares.getTransfers
+    environment: 
+      FPL_LOGIN: ${ssm(us-east-1):FPL_LOGIN}
+      FPL_PWD: ${ssm(us-east-1):FPL_PWD}
     events:
       - httpApi:
           path: /
           method: get
+
+plugins:
+  - serverless-python-requirements
+  - serverless-offline
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
