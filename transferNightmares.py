@@ -40,8 +40,10 @@ def getTransfers(event, context):
 
             if this_weeks_transfers:
                 transfer_details = {
-                    'has_free_transfer': calculate_if_contestant_had_a_free_transfer(gw_number, contestant_transfers_history),
-                    'moves': this_weeks_transfers
+                    'has_2_free_transfers': calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers_history),
+                    'moves': this_weeks_transfers,
+                    # The total cost of the transfers made after free transfers are taken into account
+                    'totalTransferCost': fpl_client.get_contestant_total_transfer_cost(contestant_id, gw_number)
                 }
 
                 contestant_chip_played = fpl_client.get_chip_played(contestant_id, gw_number)
@@ -69,8 +71,8 @@ def getTransfers(event, context):
 
     return response
 
-
-def calculate_if_contestant_had_a_free_transfer(gw_number, contestant_transfers):
+# Checks if the contestant rolled a free transfer
+def calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers):
     free_transfer = False
     for gw in range(2, gw_number):
         count = 0

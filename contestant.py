@@ -32,7 +32,7 @@ class Contestant:
         number_of_hits = 0
         if self.transfer_details:
             if self.chip_played not in self.SAFE_CHIPS:
-                num_allowed_transfers = (2 if self.transfer_details['has_free_transfer'] else 1)
+                num_allowed_transfers = (2 if self.transfer_details['has_2_free_transfers'] else 1)
 
                 number_of_hits = len(self.transfer_details['moves']) - num_allowed_transfers
         return number_of_hits

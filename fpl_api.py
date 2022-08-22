@@ -24,7 +24,6 @@ class FPLClient:
     def fpl_league_url(self, league_id):
         return f'{self.fpl_root_url()}/leagues-classic/{league_id}/standings/'
 
-#TODO need error handling here
     def get_all_players_data(self):
         jresp = self.session.get(self.fpl_bootstrap_static_url()).json()
         gw_number = 0
@@ -44,3 +43,8 @@ class FPLClient:
 
     def get_league_details(self, league_id):
         return self.session.get(self.fpl_league_url(league_id)).json()
+
+    def get_contestant_total_transfer_cost(self, contestant_id, gameweek_number):
+        url = f'{self.fpl_contestant_url(contestant_id)}/history/'
+        contestant_info = self.session.get(url).json()
+        return contestant_info.get("current")[gameweek_number - 1]["event_transfers_cost"]
