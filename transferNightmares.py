@@ -3,19 +3,14 @@ from contestant import Contestant
 from player import Player
 import json
 import boto3
-import click
-import os
 
 client = boto3.client('ssm')
 
 def getTransfers(event, context):
     league_id = 1117937
 
-    FPL_LOGIN = os.environ.get('FPL_LOGIN')
-    FPL_PWD = os.environ.get('FPL_PWD')
-
     # 0. Login
-    fpl_client = FPLClient(FPL_LOGIN, FPL_PWD)
+    fpl_client = FPLClient('test', 'test')
 
     # 1. Get GW Number and populate Players list from FPL
     all_players = {}
@@ -63,16 +58,16 @@ def getTransfers(event, context):
     week_info = {
         'league_name': league_details["league"]["name"],
         'gw_number': gw_number,
-        'mvp': contestants[0].toJSON(),
-        'shitebag': contestants[-1].toJSON()
+        'mvp': contestants[0],
+        'shitebag': contestants[-1]
     }
 
     response = {
         "statusCode": 200,
-        "body": week_info
+        "body": json.dumps(week_info, default=lambda o: o.__dict__, indent=4)
     }
 
-    return json.dumps(response)
+    return response
 
 
 def calculate_if_contestant_had_a_free_transfer(gw_number, contestant_transfers):

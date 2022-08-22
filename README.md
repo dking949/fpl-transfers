@@ -7,7 +7,7 @@ This project analyses the transfers made by each player each gameweek to see who
 
 ## Background
 The idea was the brainchild of James. He wrote a Python script that would send an email blast to all members of the mini league with the gameweeks transfer results. Together we repurposed this a little bit and turned it into an API hosted on AWS using Serverless (https://www.serverless.com/).
-In a seperate repo (TODO) I have created a React frontend app to display the data.
+In a seperate repo I have created a React frontend app to display the data: https://github.com/dking949/fpl-transer-abuse-frontend
 
 ## Technologies Used
 - Python
@@ -19,41 +19,9 @@ In a seperate repo (TODO) I have created a React frontend app to display the dat
 
 ### Deployment (via serverless)
 
+To deploy to serverless, run
 ```
 $ serverless deploy
-```
-
-After deploying, you should see output similar to:
-
-```bash
-Deploying aws-python-http-api-project to stage dev (us-east-1)
-
-✔ Service deployed to stack aws-python-http-api-project-dev (140s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: aws-python-http-api-project-dev-hello (2.3 kB)
-```
-
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [http event docs](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/).
-
-### Invocation
-
-After successful deployment, you can call the created application via HTTP:
-
-```bash
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
-```
-
-Which should result in response similar to the following (removed `input` content for brevity):
-
-```json
-{
-  "message": "Go Serverless v3.0! Your function executed successfully!",
-  "input": {
-    ...
-  }
-}
 ```
 
 ### Local development
@@ -62,15 +30,6 @@ You can invoke your function locally by using the following command:
 
 ```bash
 serverless invoke local --function hello
-```
-
-Which should result in response similar to the following:
-
-```
-{
-  "statusCode": 200,
-  "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
-}
 ```
 
 Alternatively, it is also possible to emulate API Gateway and Lambda locally by using `serverless-offline` plugin. In order to do that, execute the following command:

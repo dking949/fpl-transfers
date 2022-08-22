@@ -21,5 +21,3 @@ class Player:
     def __repr__(self):
         return self.__str__()
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda obj: obj.__dict__)
