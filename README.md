@@ -7,7 +7,7 @@ This project analyses the transfers made by each player each gameweek to see who
 
 ## Background
 The idea was the brainchild of James. He wrote a Python script that would send an email blast to all members of the mini league with the gameweeks transfer results. Together we repurposed this a little bit and turned it into an API hosted on AWS using Serverless (https://www.serverless.com/).
-In a seperate repo I have created a React frontend app to display the data: https://github.com/dking949/fpl-transer-abuse-frontend
+In a seperate repo I have created a React frontend app to display the data: https://github.com/dking949/fpl-transers-frontend
 
 ## Technologies Used
 - Python
