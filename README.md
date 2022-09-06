@@ -1,6 +1,6 @@
-# FPL Transfer Abuse
+# FPL Transfers
 This project is a joint collaboration between mates (James & Darren) and fantasy football rivals.
-Fantasy Premier league: (https://fantasy.premierleague.com/) is a fantasy football game played by over 8 million players worldwide.
+Fantasy Premier league: (https://fantasy.premierleague.com/) is a fantasy football game played by over 10 million players worldwide.
 We play every year and are in a pretty competitive mini league with some other mates.
 
 This project analyses the transfers made by each player each gameweek to see who made the best and worst transfers. It then shows these transfers on web app for all to see just how good (or poor) your managerial knowledge is compared to your mates.
