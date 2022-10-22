@@ -69,28 +69,10 @@ class FPLClient:
             vs_team_id = fixture["team_h"]
 
         all_team_data = self.all_data.get("teams")
-        vs_team_data = list(filter(lambda item: item['id'] == vs_team_id, all_team_data))
+        vs_team_data = list(filter(lambda item: item['id'] == vs_team_id, all_team_data))[0]
         vs_team_short_name = vs_team_data["short_name"]
 
         if (is_home_fixture):
             return f'{vs_team_short_name} (H)'
         else:
             return f'{vs_team_short_name} (A)'
-
- # {
-    #     "playerId": 599,
-    #     "playerName": "Haaland",
-    #     "photoUrl": "",
-    #     "fixture": "BOU(H)",
-    #     "captainedBy": [
-    #         {
-    #             "id": "4",
-    #             "name": "Darren"
-    #         },
-    #         {
-    #             "id": "44",
-    #             "name": "James"
-    #         }
-    #     ],
-    #     "captainedByPercent": "60"
-    # },
