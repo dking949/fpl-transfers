@@ -116,13 +116,21 @@ def get_gameweek_captains(contestants, gw_number, all_players, fpl_client):
             )
 
     gameweek_captain_objects = []
+
+    player = all_players[captainId]
     for captain in gameweek_captains:
         player = all_players[captainId]
         captainedBy = captain.get("captainedByContestants")
         
         # Create captained player class
         gameweek_captain_objects.append(
-            CaptainedPlayer(player.id, player.name, player.photo_url, player.points, fpl_client, captainedBy)
+            CaptainedPlayer(
+                getattr(player, "id"),
+                getattr(player, "name"),
+                getattr(player, "photo_url"),
+                getattr(player, "points"),
+                fpl_client,
+                captainedBy)
         )
 
     return gameweek_captain_objects

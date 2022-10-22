@@ -58,13 +58,12 @@ class FPLClient:
     # Gets the given players current fixture in format team_name (H/A)
     # Eg: MUN (H), WHU (A)
     def get_player_fixture(self, player_id):
-        url = f'{self.fpl_root_url}/element-summary/{player_id}'
-        fixtures = self.session.get(url).json().get("fixtures")
-        fixture= fixtures[0]
-
+        url = f'{self.fpl_root_url()}/element-summary/{player_id}/'
+        fixture = self.session.get(url).json().get("fixtures")[0]
         vs_team_id = ''
         is_home_fixture = fixture["is_home"]
-        if(is_home_fixture):
+
+        if (is_home_fixture):
             vs_team_id = fixture["team_a"]
         else:
             vs_team_id = fixture["team_h"]
