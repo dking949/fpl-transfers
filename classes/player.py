@@ -1,9 +1,9 @@
 import os
-import json
 
 class Player:
 
-    def __init__(self, name, photo_id, points):
+    def __init__(self, id, name, photo_id, points):
+        self.id = id
         self.name = name
         self.photo_url = self._create_photo_url(photo_id)
         self.points = points
