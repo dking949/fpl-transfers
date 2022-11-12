@@ -117,11 +117,10 @@ def get_gameweek_captains(contestants, gw_number, all_players, fpl_client):
 
     gameweek_captain_objects = []
 
-    player = all_players[captainId]
     for captain in gameweek_captains:
+        captainId = captain["captainId"]
         player = all_players[captainId]
-        captainedBy = captain.get("captainedByContestants")
-        
+        captainedBy = captain.get("captainedByContestants")        
         # Create captained player class
         gameweek_captain_objects.append(
             CaptainedPlayer(
