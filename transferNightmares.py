@@ -8,7 +8,7 @@ import boto3
 client = boto3.client('ssm')
 
 def getTransfers(event, context):
-    league_id = 1117937
+    league_id = 1267504
 
     # Setup the API client
     fpl_client = FPLClient()
