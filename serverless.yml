@@ -15,14 +15,16 @@ functions:
       FPL_PWD: ${ssm(us-east-1):FPL_PWD}
     events:
       - httpApi:
-          path: /
+          path: /transfers
           method: get
+    timeout: 15
   getDifferentials:
     handler: transferNightmares.getDifferentials
     events:
       - httpApi:
-          path: /
+          path: /differentials
           method: get
+    timeout: 15
 
 plugins:
   - serverless-python-requirements

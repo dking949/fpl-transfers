@@ -74,9 +74,18 @@ def getTransfers(event, context):
 
     return response
 
-def getDifferentials():
+def getDifferentials(event, context):
     fpl_client = FPLClient()
-    return fpl_client.get_high_scoring_picks_owned_by_contestants()
+    respBody = {
+        "picks": fpl_client.get_high_scoring_picks_owned_by_contestants()
+    }
+
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(respBody, default=lambda o: o.__dict__, indent=4)
+    }
+
+    return response
 
 # Checks if the contestant rolled a free transfer
 def calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers):

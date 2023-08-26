@@ -90,8 +90,8 @@ class FPLClient:
     def get_gameweek_high_scoring_players(self):
         raw_players_data = self.all_data.get("elements")
         lowerScoringThreshold = 5
-        high_scoring_players = filter(lambda player: Helper.scored_over_points_threshold, (raw_players_data , lowerScoringThreshold))
-        return high_scoring_players
+        high_scoring_players = filter(lambda player: player.get("event_points", 0) > lowerScoringThreshold, raw_players_data)
+        return list(high_scoring_players)
     
     # Get all picks for a contestant for a given gameweek
     def get_contestant_gameweek_picks(self, contestant_id, gameweek_number):
@@ -104,28 +104,52 @@ class FPLClient:
         return clos_ard_league_id
     
     def get_high_scoring_picks_owned_by_contestants(self):
-        allPlayerPicks = set()
-        contestantIds = self.get_league_contestant_ids(self.get_league_id())
+        allPlayerPicks = []
+        contestant_picks_dict = {}
+        contestant_ids = self.get_league_contestant_ids(self.get_league_id())
 
-        for id in contestantIds:
+        for id in contestant_ids:
             contestantPicks = self.get_contestant_gameweek_picks(id, self.current_gameweek_number)
-            # Set will automatically handle duplicates
-            allPlayerPicks.update(contestantPicks)
+            contestant_picks_dict[id] = contestantPicks
+            
+            # Add unique picks to allPlayerPicks list
+            for pick in contestantPicks:
+                if pick not in allPlayerPicks:
+                    allPlayerPicks.append(pick)
 
         # Filter allPlayerPicks down to only include high scorers
         high_scoring_players = self.get_gameweek_high_scoring_players()
-        owned_high_scoring_players = [scorer for scorer in high_scoring_players if scorer['element'] in allPlayerPicks]
+        owned_high_scoring_players = [scorer for scorer in high_scoring_players if scorer['id'] in {pick['element'] for pick in allPlayerPicks}]
+        owned_high_scoring_players = list(map(self.trim_player_object , owned_high_scoring_players))
+        
+        # For each owned_high_scoring_players, find out who owns him. If a contestant owns him
+        # their ID will be added to an ownedBy array in the player object
+        for contestant_id, player_picks in contestant_picks_dict.items():
+            for pick in player_picks:
+                player_id = pick["element"]
+                for player in owned_high_scoring_players:
+                    if player_id == player["id"]:
+                        if "ownedBy" not in player:
+                            player["ownedBy"] = []
+                        player["ownedBy"].append(contestant_id)
+
         return owned_high_scoring_players
 
     # For the given league, fetch all contestant ids
     def get_league_contestant_ids(self, league_id: int):
         league_standings = self.get_league_details(league_id)['standings']['results']
-        contestantIds = []
+        contestant_ids = []
         for contestant in league_standings:
-            contestantIds.append(contestant['entry'])
+            contestant_ids.append(contestant['entry'])
 
-        return contestantIds
+        return contestant_ids
 
+    def trim_player_object(self, player):
+        return {
+            "id": player["id"],
+            "points": player["event_points"],
+            "name": player["web_name"]
+        }
     
 
     # Need to filter high scoring player list down to players contestants have
