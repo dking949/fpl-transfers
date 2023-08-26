@@ -17,8 +17,7 @@ def getTransfers(event, context):
     all_players = {}
     gw_number, player_data_json = fpl_client.get_all_players_data()
 
-    # TODO: this is creating a player object for EVERY player ij the game
-    # might not be necessary
+    # TODO: this is creating a player object for EVERY player in the game. might not be necessary
     for player in player_data_json:
         all_players[player["id"]] = Player(player["id"], player["web_name"], player["photo"], player["event_points"])
 
@@ -74,6 +73,10 @@ def getTransfers(event, context):
     }
 
     return response
+
+def getDifferentials():
+    fpl_client = FPLClient()
+    return fpl_client.get_high_scoring_picks_owned_by_contestants()
 
 # Checks if the contestant rolled a free transfer
 def calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers):

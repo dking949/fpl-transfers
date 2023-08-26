@@ -17,6 +17,12 @@ functions:
       - httpApi:
           path: /
           method: get
+  getDifferentials:
+    handler: transferNightmares.getDifferentials
+    events:
+      - httpApi:
+          path: /
+          method: get
 
 plugins:
   - serverless-python-requirements
