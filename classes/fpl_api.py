@@ -1,5 +1,5 @@
 import requests
-from helpers.helper import Helper
+from classes.contestant import Contestant
 
 class FPLClient:
 
@@ -7,7 +7,10 @@ class FPLClient:
         self.session = requests.Session()
         # Store the data from the api call on init as it is needed a lot
         self.all_data = self.session.get(self.fpl_bootstrap_static_url()).json()
+        # Clos Ard League ID
+        self.league_id = 1267504 
         self.current_gameweek_number = self.get_current_gameweek_number()
+        self.league_contestants = self.get_league_contestants(self.league_id)
 
     def fpl_root_url(self):
         return 'https://fantasy.premierleague.com/api'
@@ -34,15 +37,8 @@ class FPLClient:
 
         return gw_number
 
-    # TODO: rename badly named function
     def get_all_players_data(self):
-        gw_number = 0
-        for event in self.all_data.get('events', []):
-            if event.get('is_current'):
-                gw_number = event.get("id")
-                break
-
-        return gw_number, self.all_data.get("elements")
+        return self.all_data.get("elements")
 
     def get_contestants_transfers(self, contestant_id):
         return self.session.get(self.fpl_contestant_transfers_url(contestant_id)).json()
@@ -69,11 +65,25 @@ class FPLClient:
     # Eg: MUN (H), WHU (A)
     def get_player_fixture(self, player_id):
         url = f'{self.fpl_root_url()}/element-summary/{player_id}/'
-        fixture = self.session.get(url).json().get("fixtures")[0]
-        vs_team_id = ''
-        is_home_fixture = fixture["is_home"]
+        raw_data = self.session.get(url).json()
+        fixtures = raw_data["fixtures"]
 
-        if (is_home_fixture):
+        # Location of data changes depending on if the gameweek is in progress or not
+        if(fixtures[0]['event'] == self.current_gameweek_number):
+            fixture = fixtures[0]
+            is_gw_live = True
+        else:
+            # Get last fixture in history
+            fixture = raw_data["history"][-1]
+            is_gw_live = False
+
+
+        vs_team_id = ''
+        is_home_fixture = fixture["is_home"] if is_gw_live else fixture["was_home"]
+
+        if (is_gw_live == False):
+            vs_team_id = fixture["opponent_team"]
+        elif (is_home_fixture):
             vs_team_id = fixture["team_a"]
         else:
             vs_team_id = fixture["team_h"]
@@ -143,6 +153,16 @@ class FPLClient:
             contestant_ids.append(contestant['entry'])
 
         return contestant_ids
+    
+    def get_league_contestants(self, league_id: int):
+        league_standings = self.get_league_details(league_id)['standings']['results']
+        contestants = []
+        for entry in league_standings:
+            contestants.append(Contestant(entry['entry'],
+                entry["player_name"],
+                entry["entry_name"]))
+
+        return contestants;
 
     def trim_player_object(self, player):
         return {

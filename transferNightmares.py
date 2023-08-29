@@ -15,7 +15,8 @@ def getTransfers(event, context):
 
     # 1. Get GW Number and populate Players list from FPL
     all_players = {}
-    gw_number, player_data_json = fpl_client.get_all_players_data()
+    gw_number = fpl_client.current_gameweek_number
+    player_data_json = fpl_client.get_all_players_data()
 
     # TODO: this is creating a player object for EVERY player in the game. might not be necessary
     for player in player_data_json:
@@ -63,8 +64,8 @@ def getTransfers(event, context):
         'league_name': league_details["league"]["name"],
         'gw_number': gw_number,
         'mvp': contestants[0],
+        # TODO: rename key
         'shitebag': contestants[-1],
-        'captaincy': get_gameweek_captains(contestants, gw_number, all_players, fpl_client)
     }
 
     response = {
@@ -87,6 +88,69 @@ def getDifferentials(event, context):
 
     return response
 
+def getCaptains(event, context):
+    fpl_client = FPLClient()
+    league_contestants = fpl_client.league_contestants
+    gw_number = fpl_client.current_gameweek_number
+    player_data = fpl_client.get_all_players_data()
+    
+    gameweek_captains = []
+    gameweek_captain_objects = []
+    test = []
+
+    for contestant in league_contestants:
+        captain_id = fpl_client.get_gameweek_captain_id(contestant.id, gw_number)
+        captain_ids = map(lambda x: x['captainId'], gameweek_captains)
+
+        test.append({
+            "contestant": contestant.name,
+            "captainId": fpl_client.get_gameweek_captain_id(contestant.id, gw_number),
+            "gameweek_number": gw_number
+        })
+
+        if captain_id not in captain_ids:
+            # Add the the new captain
+            gameweek_captains.append({
+                "captainId": captain_id,
+                "captainedByContestants": [
+                    {
+                        "id": contestant.id,
+                        "name": contestant.name
+                    }
+                ]
+            })
+        else:
+            # Captain exists so add to its captainedBy array
+            # Get the captain object from the array
+            captain_entry = next((item for item in gameweek_captains if item['captainId'] == captain_id), None)
+            captain_entry["captainedByContestants"].append(
+                {
+                    "id": contestant.id,
+                    "name": contestant.name
+                }
+            )
+
+    #  filter all player data to just captains
+    for captain in gameweek_captains:
+        #  filter all player data to just captains
+        captain_obj = list(filter(lambda item: item['id'] == captain['captainId'], player_data))[0]
+        gameweek_captain_objects.append(CaptainedPlayer(
+            captain_obj["id"],
+            captain_obj["web_name"],
+            captain_obj["photo"],
+            captain_obj["event_points"],
+            fpl_client,
+            captain["captainedByContestants"]
+        ))
+
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(gameweek_captain_objects, default=lambda o: o.__dict__, indent=4)
+    }
+
+    return response
+    
+
 # Checks if the contestant rolled a free transfer
 def calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers):
     free_transfer = False
@@ -97,51 +161,3 @@ def calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfer
                 count = count + 1
         free_transfer = (count == 0) or (free_transfer and count < 2)
     return free_transfer
-
-def get_gameweek_captains(contestants, gw_number, all_players, fpl_client):
-    gameweek_captains = []
-
-    def getId(entry):
-        return entry.get("captainId")
-    
-    for contestant in contestants:
-        captainId = fpl_client.get_gameweek_captain_id(contestant.id, gw_number)
-        captainIds = map(getId, gameweek_captains)
-
-        if captainId not in captainIds:
-            gameweek_captains.append({
-                "captainId": captainId,
-                "captainedByContestants": [
-                    {
-                        "id": contestant.id,
-                        "name": contestant.name
-                    }
-                ]
-            })
-        else:
-            captainEntry = list(filter(lambda item: item['captainId'] == captainId, gameweek_captains))[0]
-            captainEntry.get("captainedByContestants").append(
-                {
-                    "id": contestant.id,
-                    "name": contestant.name
-                }
-            )
-
-    gameweek_captain_objects = []
-
-    for captain in gameweek_captains:
-        captainId = captain["captainId"]
-        player = all_players[captainId]
-        captainedBy = captain.get("captainedByContestants")        
-        # Create captained player class
-        gameweek_captain_objects.append(
-            CaptainedPlayer(
-                getattr(player, "id"),
-                getattr(player, "name"),
-                getattr(player, "photo_url"),
-                getattr(player, "points"),
-                fpl_client,
-                captainedBy)
-        )
-
-    return gameweek_captain_objects

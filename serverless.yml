@@ -25,6 +25,13 @@ functions:
           path: /differentials
           method: get
     timeout: 15
+  getCaptains:
+    handler: transferNightmares.getCaptains
+    events:
+      - httpApi:
+          path: /captains
+          method: get
+    timeout: 15
 
 plugins:
   - serverless-python-requirements
