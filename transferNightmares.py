@@ -2,16 +2,40 @@ from classes.captainedPlayer import CaptainedPlayer
 from classes.fpl_api import FPLClient
 from classes.contestant import Contestant
 from classes.player import Player
+from helpers.helper import Helper
 import json
 import boto3
 
 client = boto3.client('ssm')
 
-def getTransfers(event, context):
-    league_id = 1267504
+def getAllData(event, context):
 
+    finalData = {
+        "transfers": getTransfers(),
+        "captain": getCaptains(),
+        "differentials": getDifferentials()
+    }
+
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(finalData, default=lambda o: o.__dict__, indent=4)
+    }
+
+    return response
+
+def getTransfersApi(event, context):
+    transfer_info = getTransfers()
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(transfer_info, default=lambda o: o.__dict__, indent=4)
+    }
+
+    return response
+
+def getTransfers():
     # Setup the API client
     fpl_client = FPLClient()
+    league_id = fpl_client.league_id
 
     # 1. Get GW Number and populate Players list from FPL
     all_players = {}
@@ -43,7 +67,7 @@ def getTransfers(event, context):
 
             if this_weeks_transfers:
                 transfer_details = {
-                    'has_2_free_transfers': calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers_history),
+                    'has_2_free_transfers': Helper.calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers_history),
                     'moves': this_weeks_transfers,
                     # The total cost of the transfers made after free transfers are taken into account
                     'totalTransferCost': fpl_client.get_contestant_total_transfer_cost(contestant_id, gw_number)
@@ -68,27 +92,41 @@ def getTransfers(event, context):
         'shitebag': contestants[-1],
     }
 
+    return week_info
+
+def getDifferentialsApi(event, context):
+    differentials = getDifferentials()
+
     response = {
         "statusCode": 200,
-        "body": json.dumps(week_info, default=lambda o: o.__dict__, indent=4)
+        "body": json.dumps(differentials, default=lambda o: o.__dict__, indent=4)
     }
 
     return response
+def getDifferentials():
+    """
+    Retrieves the high-scoring picks owned by contestants in a fantasy football league.
 
-def getDifferentials(event, context):
+    Returns:
+    A dictionary containing the high-scoring picks owned by contestants.
+    """
     fpl_client = FPLClient()
     respBody = {
         "picks": fpl_client.get_high_scoring_picks_owned_by_contestants()
     }
 
+    return respBody
+
+def getCaptainsApi(event,context):
+    gameweek_captain_objects = getCaptains()
     response = {
         "statusCode": 200,
-        "body": json.dumps(respBody, default=lambda o: o.__dict__, indent=4)
+        "body": json.dumps(gameweek_captain_objects, default=lambda o: o.__dict__, indent=4)
     }
 
     return response
 
-def getCaptains(event, context):
+def getCaptains():
     fpl_client = FPLClient()
     league_contestants = fpl_client.league_contestants
     gw_number = fpl_client.current_gameweek_number
@@ -96,17 +134,10 @@ def getCaptains(event, context):
     
     gameweek_captains = []
     gameweek_captain_objects = []
-    test = []
 
     for contestant in league_contestants:
         captain_id = fpl_client.get_gameweek_captain_id(contestant.id, gw_number)
         captain_ids = map(lambda x: x['captainId'], gameweek_captains)
-
-        test.append({
-            "contestant": contestant.name,
-            "captainId": fpl_client.get_gameweek_captain_id(contestant.id, gw_number),
-            "gameweek_number": gw_number
-        })
 
         if captain_id not in captain_ids:
             # Add the the new captain
@@ -143,21 +174,7 @@ def getCaptains(event, context):
             captain["captainedByContestants"]
         ))
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(gameweek_captain_objects, default=lambda o: o.__dict__, indent=4)
-    }
-
-    return response
+    return gameweek_captain_objects
     
 
-# Checks if the contestant rolled a free transfer
-def calculate_if_contestant_had_an_extra_transfer(gw_number, contestant_transfers):
-    free_transfer = False
-    for gw in range(2, gw_number):
-        count = 0
-        for transfer in contestant_transfers:
-            if transfer['event'] == gw:
-                count = count + 1
-        free_transfer = (count == 0) or (free_transfer and count < 2)
-    return free_transfer
+

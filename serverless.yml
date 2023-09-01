@@ -8,8 +8,15 @@ provider:
   runtime: python3.8
 
 functions:
+  getAllData:
+    handler: transferNightmares.getAllData
+    events:
+      - httpApi:
+          path: /
+          method: get
+    timeout: 20
   getTransfers:
-    handler: transferNightmares.getTransfers
+    handler: transferNightmares.getTransfersApi
     environment: 
       FPL_LOGIN: ${ssm(us-east-1):FPL_LOGIN}
       FPL_PWD: ${ssm(us-east-1):FPL_PWD}
@@ -19,14 +26,14 @@ functions:
           method: get
     timeout: 15
   getDifferentials:
-    handler: transferNightmares.getDifferentials
+    handler: transferNightmares.getDifferentialsApi
     events:
       - httpApi:
           path: /differentials
           method: get
     timeout: 15
   getCaptains:
-    handler: transferNightmares.getCaptains
+    handler: transferNightmares.getCaptainsApi
     events:
       - httpApi:
           path: /captains
