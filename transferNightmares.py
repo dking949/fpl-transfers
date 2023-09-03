@@ -115,11 +115,7 @@ def getDifferentials():
     differential_picks = fpl_client.get_differential_high_scoring_picks(high_scoring_picks)
     differential_picks = fpl_client.add_contestant_info_to_differential_picks(differential_picks)
 
-    respBody = {
-        "differentialPicks": differential_picks
-    }
-
-    return respBody
+    return differential_picks
 
 def getCaptainsApi(event,context):
     gameweek_captain_objects = getCaptains()
