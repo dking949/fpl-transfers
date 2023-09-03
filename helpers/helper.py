@@ -18,3 +18,12 @@ class Helper:
                     count = count + 1
             free_transfer = (count == 0) or (free_transfer and count < 2)
         return free_transfer
+    
+
+    # The replace_contestant_ids_with_contestant_objects method takes in two parameters:
+    # contestants and ownedBy. It replaces the contestant IDs in the ownedBy list with
+    # the corresponding contestant objects from the contestants list.
+    def replace_contestant_ids_with_contestant_objects(contestants, ownedBy):
+        id_to_contestant = {contestant.id: contestant for contestant in contestants}
+        replaced_objects = [id_to_contestant[id] for id in ownedBy]
+        return replaced_objects

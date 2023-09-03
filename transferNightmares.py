@@ -111,8 +111,12 @@ def getDifferentials():
     A dictionary containing the high-scoring picks owned by contestants.
     """
     fpl_client = FPLClient()
+    high_scoring_picks = fpl_client.get_high_scoring_picks_owned_by_contestants()
+    differential_picks = fpl_client.get_differential_high_scoring_picks(high_scoring_picks)
+    differential_picks = fpl_client.add_contestant_info_to_differential_picks(differential_picks)
+
     respBody = {
-        "picks": fpl_client.get_high_scoring_picks_owned_by_contestants()
+        "differentialPicks": differential_picks
     }
 
     return respBody

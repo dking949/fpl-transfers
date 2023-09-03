@@ -1,5 +1,7 @@
 import requests
+import math
 from classes.contestant import Contestant
+from helpers.helper import Helper
 
 class FPLClient:
 
@@ -144,6 +146,29 @@ class FPLClient:
                         player["ownedBy"].append(contestant_id)
 
         return owned_high_scoring_players
+
+
+    # Given a list of players with ownedBy Array. If the player is owned by less
+    # than threshold (20%) of league contestants add them to an array and return it
+    def get_differential_high_scoring_picks(self, high_scoring_players):
+        differential_threshold = math.floor(0.2 * len(self.league_contestants))
+        differential_players = []
+
+        for player in high_scoring_players:
+            if len(player['ownedBy']) <= differential_threshold:
+                differential_players.append(player)
+        
+        return differential_players
+
+    def add_contestant_info_to_differential_picks(self, differential_picks):
+        for pick in differential_picks:
+            contestantIds = pick["ownedBy"]
+
+            # Find contestant object and replace id with contestant
+            pick['ownedBy'] = Helper.replace_contestant_ids_with_contestant_objects(self.league_contestants, contestantIds)
+
+        return differential_picks
+
 
     # For the given league, fetch all contestant ids
     def get_league_contestant_ids(self, league_id: int):
