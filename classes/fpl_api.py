@@ -1,6 +1,7 @@
 import requests
 import math
 from classes.contestant import Contestant
+from classes.player import Player
 from helpers.helper import Helper
 
 class FPLClient:
@@ -193,8 +194,12 @@ class FPLClient:
         return {
             "id": player["id"],
             "points": player["event_points"],
-            "name": player["web_name"]
+            "name": player["web_name"],
+            "photo_id": player["photo"]
         }
     
+    def add_player_photo_to_players(self, players):
+        for player in players:
+            player['photo_url'] = Player._create_photo_url(player['photo_id'])
 
-    # Need to filter high scoring player list down to players contestants have
+        return players

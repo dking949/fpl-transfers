@@ -114,6 +114,7 @@ def getDifferentials():
     high_scoring_picks = fpl_client.get_high_scoring_picks_owned_by_contestants()
     differential_picks = fpl_client.get_differential_high_scoring_picks(high_scoring_picks)
     differential_picks = fpl_client.add_contestant_info_to_differential_picks(differential_picks)
+    differential_picks = fpl_client.add_player_photo_to_players(differential_picks)
 
     return differential_picks
 
