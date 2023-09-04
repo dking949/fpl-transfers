@@ -14,7 +14,7 @@ functions:
       - httpApi:
           path: /
           method: get
-    timeout: 20
+    timeout: 60
   getTransfers:
     handler: transferNightmares.getTransfersApi
     environment: 
@@ -24,21 +24,21 @@ functions:
       - httpApi:
           path: /transfers
           method: get
-    timeout: 15
+    timeout: 30
   getDifferentials:
     handler: transferNightmares.getDifferentialsApi
     events:
       - httpApi:
           path: /differentials
           method: get
-    timeout: 15
+    timeout: 30
   getCaptains:
     handler: transferNightmares.getCaptainsApi
     events:
       - httpApi:
           path: /captains
           method: get
-    timeout: 15
+    timeout: 30
 
 plugins:
   - serverless-python-requirements

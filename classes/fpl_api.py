@@ -112,14 +112,10 @@ class FPLClient:
         # all players the contestant is using this week
         return self.session.get(url).json().get("picks")
     
-    def get_league_id(self):
-        clos_ard_league_id = 1267504
-        return clos_ard_league_id
-    
     def get_high_scoring_picks_owned_by_contestants(self):
         allPlayerPicks = []
         contestant_picks_dict = {}
-        contestant_ids = self.get_league_contestant_ids(self.get_league_id())
+        contestant_ids = self.get_league_contestant_ids(self.league_id)
 
         for id in contestant_ids:
             contestantPicks = self.get_contestant_gameweek_picks(id, self.current_gameweek_number)

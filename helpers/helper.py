@@ -25,5 +25,12 @@ class Helper:
     # the corresponding contestant objects from the contestants list.
     def replace_contestant_ids_with_contestant_objects(contestants, ownedBy):
         id_to_contestant = {contestant.id: contestant for contestant in contestants}
-        replaced_objects = [id_to_contestant[id] for id in ownedBy]
+        replaced_objects = []
+
+        for id in ownedBy:
+            if id in id_to_contestant:
+                replaced_objects.append(id_to_contestant[id])
+            else:
+                print(f"Warning: Contestant with ID {id} not found in the dictionary.")
+
         return replaced_objects
