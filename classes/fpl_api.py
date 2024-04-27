@@ -6,12 +6,12 @@ from helpers.helper import Helper
 
 class FPLClient:
 
-    def __init__(self):
+    def __init__(self, league_id):
         self.session = requests.Session()
         # Store the data from the api call on init as it is needed a lot
         self.all_data = self.session.get(self.fpl_bootstrap_static_url()).json()
         # Clos Ard League ID
-        self.league_id = 1267504 
+        self.league_id = league_id
         self.current_gameweek_number = self.get_current_gameweek_number()
         self.league_contestants = self.get_league_contestants(self.league_id)
 

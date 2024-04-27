@@ -10,21 +10,32 @@ client = boto3.client('ssm')
 
 def getAllData(event, context):
 
+    query_params = event.get('queryStringParameters', {})
+    fallback_league_id = '1267504'
+    league_id = query_params.get('league_id', fallback_league_id)
+
     finalData = {
-        "transfers": getTransfers(),
-        "captain": getCaptains(),
-        "differentials": getDifferentials()
+        "transfers": getTransfers(league_id),
+        "captain": getCaptains(league_id),
+        "differentials": getDifferentials(league_id)
     }
 
     response = {
         "statusCode": 200,
-        "body": json.dumps(finalData, default=lambda o: o.__dict__, indent=4)
+        "body": json.dumps(finalData, default=lambda o: o.__dict__, indent=4),
+        "headers": {
+            'Access-Control-Allow-Origin': 'fpl-transers-frontend.vercel.app',
+            'Access-Control-Allow-Credentials': True,
+        }
     }
 
     return response
 
 def getTransfersApi(event, context):
-    transfer_info = getTransfers()
+    query_params = event.get('queryStringParameters', {})
+    fallback_league_id = '1267504'
+    league_id = query_params.get('league_id', fallback_league_id)
+    transfer_info = getTransfers(league_id)
     response = {
         "statusCode": 200,
         "body": json.dumps(transfer_info, default=lambda o: o.__dict__, indent=4)
@@ -32,9 +43,9 @@ def getTransfersApi(event, context):
 
     return response
 
-def getTransfers():
+def getTransfers(league_id):
     # Setup the API client
-    fpl_client = FPLClient()
+    fpl_client = FPLClient(league_id)
     league_id = fpl_client.league_id
 
     # 1. Get GW Number and populate Players list from FPL
@@ -103,14 +114,14 @@ def getDifferentialsApi(event, context):
     }
 
     return response
-def getDifferentials():
+def getDifferentials(league_id):
     """
     Retrieves the high-scoring picks owned by contestants in a fantasy football league.
 
     Returns:
     A dictionary containing the high-scoring picks owned by contestants.
     """
-    fpl_client = FPLClient()
+    fpl_client = FPLClient(league_id)
     high_scoring_picks = fpl_client.get_high_scoring_picks_owned_by_contestants()
     differential_picks = fpl_client.get_differential_high_scoring_picks(high_scoring_picks)
     differential_picks = fpl_client.add_contestant_info_to_differential_picks(differential_picks)
@@ -127,8 +138,8 @@ def getCaptainsApi(event,context):
 
     return response
 
-def getCaptains():
-    fpl_client = FPLClient()
+def getCaptains(league_id):
+    fpl_client = FPLClient(league_id)
     league_contestants = fpl_client.league_contestants
     gw_number = fpl_client.current_gameweek_number
     player_data = fpl_client.get_all_players_data()

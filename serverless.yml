@@ -1,11 +1,11 @@
 org: dking949
 app: aws-fpl-transfer-abuse-api
 service: aws-fpl-transfer-abuse-api
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.9
 
 functions:
   getAllData:
@@ -17,7 +17,7 @@ functions:
     timeout: 60
   getTransfers:
     handler: transferNightmares.getTransfersApi
-    environment: 
+    environment:
       FPL_LOGIN: ${ssm(us-east-1):FPL_LOGIN}
       FPL_PWD: ${ssm(us-east-1):FPL_PWD}
     events:
