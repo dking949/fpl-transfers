@@ -24,7 +24,7 @@ def getAllData(event, context):
         "statusCode": 200,
         "body": json.dumps(finalData, default=lambda o: o.__dict__, indent=4),
         "headers": {
-            'Access-Control-Allow-Origin': 'fpl-transers-frontend.vercel.app',
+            'Access-Control-Allow-Origin': 'https://fpl-transers-frontend.vercel.app',
             'Access-Control-Allow-Credentials': True,
         }
     }
