@@ -72,7 +72,7 @@ class FPLClient:
         fixtures = raw_data["fixtures"]
 
         # Location of data changes depending on if the gameweek is in progress or not
-        if(fixtures[0]['event'] == self.current_gameweek_number):
+        if(len(fixtures) > 0 and fixtures[0]['event'] == self.current_gameweek_number):
             fixture = fixtures[0]
             is_gw_live = True
         else:
