@@ -6,7 +6,7 @@ We play every year and are in a pretty competitive mini league with some other m
 This project analyses the transfers made by each player each gameweek to see who made the best and worst transfers. It then shows these transfers on web app for all to see just how good (or poor) your managerial knowledge is compared to your mates.
 
 ## Live Demo
-The frontend for the proect is deployed on vercel here: https://fpl-transer-abuse-frontend-3wbvvwpyy-dking949.vercel.app/
+The frontend for the proect is deployed on vercel here: https://fpl-transers-frontend.vercel.app/
 
 ## James' Github
 https://github.com/James-Fallon
